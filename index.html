@@ -1,0 +1,227 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ToolForge X — All-in-One Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+</head>
+<body data-theme="light">
+  <div id="notification" class="toast"></div>
+
+  <header class="card">
+    <div class="logo">
+      <div class="logo-icon"><i class="fas fa-tools"></i></div>
+      <h1 class="logo-title">ToolForge X</h1>
+    </div>
+
+    <nav>
+      <ul>
+        <li><a href="#" id="nav-dashboard" class="active">Dashboard</a></li>
+        <li><a href="#" id="nav-monetize">Monetization</a></li>
+      </ul>
+    </nav>
+
+    <div class="user-actions">
+      <div class="user-profile">
+        <div id="user-info" style="display:none">
+          <span id="welcome-message">Welcome, <strong id="username">Guest</strong></span>
+          <button id="logout-btn" class="btn btn-secondary">Logout</button>
+        </div>
+        <button id="open-login" class="btn btn-secondary">Login / Register</button>
+      </div>
+
+      <button id="toggle-theme" class="btn btn-secondary">Toggle Theme</button>
+
+      <div id="notification-bell" class="notification-bell" title="Notifications">
+        <i class="fas fa-bell"></i>
+        <span id="notification-count" class="notification-count">0</span>
+      </div>
+
+      <button id="open-data" class="btn btn-secondary">Manage Data</button>
+    </div>
+  </header>
+
+  <aside class="sidebar card" id="sidebar">
+    <button id="sidebar-toggle" class="btn">☰</button>
+    <h3>Tool Categories</h3>
+    <select id="category-filter">
+      <option value="">All Categories</option>
+      <option value="amazon">Amazon</option>
+      <option value="seo">SEO</option>
+      <option value="marketing">Marketing</option>
+      <option value="research">Research</option>
+      <option value="favorites">Favorites</option>
+    </select>
+  </aside>
+
+  <main class="tools-grid" id="main-grid">
+    <section style="grid-column:1/-1; display:flex; justify-content:flex-end; gap:8px; align-items:center;">
+      <input id="search-input" placeholder="Search tools..." />
+      <button id="search-btn" class="btn">Search</button>
+      <button id="clear-search-btn" class="btn btn-secondary">Clear</button>
+      <span id="search-spinner" style="display:none"><i class="fas fa-spinner fa-spin"></i></span>
+    </section>
+
+    <section id="search-history" style="display:none; grid-column:1/-1;">
+      <h3>Search History</h3>
+      <ul id="history-list"></ul>
+    </section>
+
+    <div id="tool-grid" style="grid-column:1/-1"></div>
+
+    <section id="chart-container" class="card" style="grid-column:1/-1;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px;">
+        <h3>Tool Usage</h3>
+        <div style="display:flex; gap:8px;">
+          <button id="reset-chart" class="btn btn-secondary">Reset Counts</button>
+          <button id="toggle-chart" class="btn btn-secondary">Toggle Chart Type</button>
+          <button id="export-chart-data" class="btn btn-secondary">Export Data</button>
+          <button id="download-chart" class="btn btn-secondary">Download Chart</button>
+        </div>
+      </div>
+      <canvas id="usage-chart" style="height:300px;"></canvas>
+    </section>
+
+    <section id="activity-log-container" class="card" style="grid-column:1/-1;">
+      <h3>Activity Log</h3>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <select id="activity-filter"><option value="all">All</option><option value="login">Login</option><option value="tool">Tool</option><option value="settings">Settings</option></select>
+        <button id="export-activity" class="btn btn-secondary">Export Activity</button>
+        <button id="toggle-activity-chart" class="btn btn-secondary">Toggle Activity Chart</button>
+      </div>
+      <canvas id="activity-chart" style="display:none; height:200px;"></canvas>
+      <ul id="activity-list"></ul>
+    </section>
+
+    <aside id="notifications-panel" class="notifications-panel card" style="display:none;">
+      <h4>Notifications</h4>
+      <button id="add-sample-notif" class="btn btn-secondary">Add Sample</button>
+      <button id="clear-notifications" class="btn btn-secondary">Clear All</button>
+      <ul id="notification-list"></ul>
+    </aside>
+
+    <button id="feedback-btn" class="btn btn-secondary" style="grid-column:1/-1; justify-self:end;">Submit Feedback</button>
+
+    <section id="monetize-panel" class="card" style="display:none; grid-column:1/-1;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3>Monetization / Earnings</h3>
+        <button id="close-monetize" class="btn btn-secondary">Close</button>
+      </div>
+
+      <form id="earnings-form" style="display:flex; gap:12px; flex-wrap:wrap; margin-top:12px;">
+        <input id="earning-date" type="date" required />
+        <input id="earning-source" placeholder="Source (eg. Ad, Affiliate)" required />
+        <input id="earning-category" placeholder="Category" required />
+        <input id="earning-clicks" type="number" placeholder="Clicks" />
+        <input id="earning-conversions" type="number" placeholder="Conversions" />
+        <input id="earning-amount" type="number" placeholder="Amount" step="0.01" required />
+        <button class="btn" type="submit">Add Earning</button>
+      </form>
+
+      <div style="margin-top:12px;">
+        <button id="export-earnings" class="btn btn-secondary">Export CSV</button>
+        <button id="clear-earnings" class="btn btn-secondary">Clear</button>
+      </div>
+
+      <table id="earnings-table" style="width:100%; margin-top:12px; border-collapse:collapse;">
+        <thead><tr><th>Date</th><th>Source</th><th>Category</th><th>Clicks</th><th>Conversions</th><th>Amount</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;">
+        <canvas id="earnings-line-chart" style="height:200px;"></canvas>
+        <canvas id="earnings-pie-chart" style="height:200px;"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="login-modal">
+    <div class="modal-content">
+      <span class="close-modal" id="close-login">&times;</span>
+      <div id="login-form">
+        <h3>Login</h3>
+        <input id="login-email" type="email" placeholder="Email" />
+        <input id="login-password" type="password" placeholder="Password" />
+        <label><input id="remember-me" type="checkbox" /> Remember Me</label>
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button id="login-btn" class="btn">Login</button>
+          <button id="show-register" class="btn btn-secondary">Register</button>
+        </div>
+        <div style="margin-top:8px;">
+          <button id="google-login" class="btn btn-social"><i class="fab fa-google"></i> Google</button>
+          <button id="facebook-login" class="btn btn-social"><i class="fab fa-facebook-f"></i> Facebook</button>
+        </div>
+        <a href="#" id="open-forgot" class="forgot-link">Forgot Password?</a>
+      </div>
+
+      <div id="register-form" style="display:none; margin-top:12px;">
+        <h3>Register</h3>
+        <input id="register-username" placeholder="Username" />
+        <input id="register-email" type="email" placeholder="Email" />
+        <input id="register-password" type="password" placeholder="Password" />
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button id="register-btn" class="btn">Register</button>
+          <button id="show-login" class="btn btn-secondary">Back to Login</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="feedback-modal">
+    <div class="modal-content">
+      <span class="close-modal" id="close-feedback">&times;</span>
+      <h3>Submit Feedback</h3>
+      <form id="feedback-form">
+        <label>Rating</label>
+        <select id="feedback-rating"><option value="">Select</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+        <label>Comment</label>
+        <textarea id="feedback-comment" rows="4"></textarea>
+        <label>Email (optional)</label>
+        <input id="feedback-email" type="email" />
+        <div style="margin-top:8px;">
+          <button class="btn" type="submit">Submit Feedback</button>
+          <button class="btn btn-secondary" type="button" id="feedback-close">Close</button>
+        </div>
+      </form>
+      <h4>Feedback History</h4>
+      <select id="feedback-filter"><option value="all">All</option><option value="4">4+ Stars</option><option value="5">5 Stars</option></select>
+      <button id="export-feedback" class="btn btn-secondary">Export Feedback</button>
+      <button id="toggle-feedback-chart" class="btn btn-secondary">Toggle Feedback Chart</button>
+      <canvas id="feedback-chart" style="display:none; height:200px;"></canvas>
+      <ul id="feedback-list"></ul>
+    </div>
+  </div>
+
+  <div class="modal" id="tool-modal">
+    <div class="modal-content">
+      <span class="close-modal" id="close-tool">&times;</span>
+      <h3 id="modal-title"></h3>
+      <p id="modal-description"></p>
+      <input id="modal-input" placeholder="Enter data..." />
+      <p id="modal-error" style="color:#ff6b6b; display:none;"></p>
+      <div style="margin-top:8px;"><button id="process-tool" class="btn">Process</button></div>
+    </div>
+  </div>
+
+  <div class="modal" id="data-management-modal">
+    <div class="modal-content">
+      <span class="close-modal" id="close-data">&times;</span>
+      <h3>Manage Your Data</h3>
+      <p>Clear specific datasets or all data (irreversible).</p>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button id="clear-search-history" class="btn btn-secondary">Clear Search History</button>
+        <button id="clear-activity-log" class="btn btn-secondary">Clear Activity Log</button>
+        <button id="clear-feedback" class="btn btn-secondary">Clear Feedback</button>
+        <button id="clear-favorites" class="btn btn-secondary">Clear Favorites</button>
+        <button id="clear-all-data" class="btn btn-danger">Clear All Data</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
