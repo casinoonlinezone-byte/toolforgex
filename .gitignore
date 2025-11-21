@@ -1,5 +1,13 @@
-﻿node_modules/
-.DS_Store
+# Folders
+node_modules/
 .vscode/
+.DS_Store
+
+# Firebase config — keep private
 js/firebase.js
+
+# Environment files
+.env
 .env.local
+.env.development
+.env.production
