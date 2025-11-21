@@ -1,0 +1,11 @@
+{
+  "env": {
+    "VITE_FIREBASE_API_KEY": "AIzaSyBJ5-b_IVSdxYN66XH14WpRSCU6Toyh2FE",
+    "VITE_FIREBASE_AUTH_DOMAIN": "earnify-pro-4d01a.firebaseapp.com",
+    "VITE_FIREBASE_PROJECT_ID": "earnify-pro-4d01a",
+    "VITE_FIREBASE_BUCKET": "earnify-pro-4d01a.firebasestorage.app",
+    "VITE_FIREBASE_SENDER": "492457671396",
+    "VITE_FIREBASE_APPID": "1:492457671396:web:1b333f3a5943f863a2caf1",
+    "VITE_FIREBASE_MEASUREMENT": "G-GMVQ6DJMMF"
+  }
+}
