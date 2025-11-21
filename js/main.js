@@ -28,7 +28,7 @@ function initAuthUI() {
   const logoutBtn = document.getElementById('logoutBtn');
   const userDisplay = document.getElementById('userDisplay');
 
-  // Display logged-in user
+  // Auto show user if logged in
   const user = getLoggedInUsername();
   if (user) userDisplay.textContent = user;
 
@@ -38,13 +38,16 @@ function initAuthUI() {
       e.preventDefault();
       const email = loginForm.email.value;
       const password = loginForm.password.value;
-      const remember = loginForm.remember.checked;
+      const remember = loginForm.remember?.checked || false;
 
       try {
         const username = await loginUser(email, password, remember);
         userDisplay.textContent = username;
+
         alert('Login successful');
+
         document.body.classList.remove('show-login');
+        showPage("dashboard");   // ★ FIXED: redirect to dashboard
       } catch (err) {
         alert(err.message);
       }
@@ -74,9 +77,11 @@ function initAuthUI() {
       await logout();
       userDisplay.textContent = 'Guest';
       alert('Logged out');
+      showPage("login");
     });
   }
 }
+
 
 // ------------------------------
 // NAVIGATION (Sidebar / Sections)
@@ -99,7 +104,7 @@ function showPage(page) {
   const target = document.getElementById(page);
   if (target) target.classList.remove('hidden');
 
-  // Load specific modules on demand
+  // Load modules when page opens
   switch (page) {
     case 'dashboard': loadDashboard(); break;
     case 'tools': loadTools(); break;
@@ -112,8 +117,9 @@ function showPage(page) {
   }
 }
 
+
 // ------------------------------
-// DASHBOARD STARTUP
+// DASHBOARD LOAD
 // ------------------------------
 function initDashboard() {
   loadDashboard();
