@@ -14,26 +14,25 @@ import {
 const notifyRef = collection(db, "notifications");
 
 // ---------------------------
-// GET ALL NOTIFICATIONS (ordered)
+// GET ALL NOTIFICATIONS
 // ---------------------------
 export async function loadNotifications() {
   const q = query(notifyRef, orderBy("timestamp", "desc"));
   const snapshot = await getDocs(q);
-  let list = [];
 
+  let list = [];
   snapshot.forEach((d) => {
     list.push({ id: d.id, ...d.data() });
   });
 
-  // UPDATE UI
   renderNotifications(list);
 }
 
 // ---------------------------
-// ADD A NEW NOTIFICATION
+// ADD NEW NOTIFICATION
 // ---------------------------
 export async function addNotification(message) {
-  const now = Date.now(); // timestamp number (perfect for ordering)
+  const now = Date.now();
 
   await addDoc(notifyRef, {
     message,
@@ -43,7 +42,7 @@ export async function addNotification(message) {
 }
 
 // ---------------------------
-// MARK NOTIFICATION AS READ
+// MARK AS READ
 // ---------------------------
 export async function markRead(id) {
   const ref = doc(db, "notifications", id);
@@ -51,7 +50,7 @@ export async function markRead(id) {
 }
 
 // ---------------------------
-// DELETE ONE OR ALL NOTIFICATIONS
+// CLEAR ALL NOTIFICATIONS
 // ---------------------------
 export async function clearAllNotifications() {
   const snapshot = await getDocs(notifyRef);
@@ -62,7 +61,7 @@ export async function clearAllNotifications() {
 }
 
 // ---------------------------
-// RENDER UI
+// UPDATE UI
 // ---------------------------
 function renderNotifications(list) {
   const box = document.getElementById("notificationsBox");
@@ -86,5 +85,4 @@ function renderNotifications(list) {
   });
 }
 
-// 👇 Expose markRead globally (for button calls)
 window.markRead = markRead;
